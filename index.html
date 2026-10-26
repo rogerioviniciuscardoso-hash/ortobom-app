@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ORTOBOM - Recuperar senha</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f1f5f9;margin:0;padding:24px;color:#18324e}
+main{max-width:420px;margin:50px auto;background:white;padding:25px;border-radius:15px}
+h1{color:#145b99;font-size:25px}
+input,button{box-sizing:border-box;width:100%;padding:14px;margin-top:12px;font-size:17px;border-radius:8px}
+input{border:1px solid #bbc8d4}
+button{background:#145b99;color:white;border:0}
+button:disabled{opacity:.6}
+#msg{line-height:1.5}
+</style>
+</head>
+<body>
+<main>
+<h1>ORTOBOM</h1>
+<h2>Definir nova senha</h2>
+<p id="msg">Verificando o link de recuperação...</p>
+<form id="form" hidden>
+<label for="senha">Nova senha</label>
+<input id="senha" type="password" minlength="8" autocomplete="new-password" required>
+<label for="confirmar">Confirme a senha</label>
+<input id="confirmar" type="password" minlength="8" autocomplete="new-password" required>
+<button id="salvar">Salvar nova senha</button>
+</form>
+</main>
+<script type="module">
+import {createClient} from 'https://esm.sh/@supabase/supabase-js@2';
+const supabase=createClient('https://ryuipntsmhybxvxjauqw.supabase.co','sb_publishable_7i6Dv1GT7JVxwaBZ85oI9A_9hOof1VV',{auth:{detectSessionInUrl:true,persistSession:false}});
+const msg=document.getElementById('msg');
+const form=document.getElementById('form');
+let autorizado=false;
+supabase.auth.onAuthStateChange((event)=>{
+ if(event==='PASSWORD_RECOVERY'){
+  autorizado=true;form.hidden=false;msg.textContent='Escolha uma nova senha com pelo menos 8 caracteres.';
+ }
+});
+async function iniciar(){
+ const url=new URL(location.href);
+ if(url.searchParams.get('error')){
+  msg.textContent='Link inválido ou expirado. Solicite outro e-mail de recuperação.';return;
+ }
+ if(url.searchParams.get('code')){
+  const {error}=await supabase.auth.exchangeCodeForSession(url.searchParams.get('code'));
+  if(error){msg.textContent='Não foi possível validar o link: '+error.message;return;}
+  autorizado=true;
+ }else if(location.hash.includes('access_token=')){
+  const p=new URLSearchParams(location.hash.slice(1));
+  if(p.get('type')==='recovery'){
+   const {error}=await supabase.auth.setSession({access_token:p.get('access_token'),refresh_token:p.get('refresh_token')});
+   if(error){msg.textContent='Link inválido: '+error.message;return;}
+   autorizado=true;
+  }
+ }
+ if(autorizado){form.hidden=false;msg.textContent='Escolha uma nova senha com pelo menos 8 caracteres.';}
+ else msg.textContent='Abra esta página pelo link enviado ao seu e-mail de recuperação.';
+}
+iniciar();
+form.addEventListener('submit',async(e)=>{
+ e.preventDefault();
+ if(!autorizado)return;
+ const senha=document.getElementById('senha').value;
+ if(senha!==document.getElementById('confirmar').value){msg.textContent='As senhas não coincidem.';return;}
+ const botao=document.getElementById('salvar');botao.disabled=true;
+ const {error}=await supabase.auth.updateUser({password:senha});
+ if(error){msg.textContent='Erro: '+error.message;botao.disabled=false;return;}
+ msg.textContent='Senha atualizada com sucesso. Você já pode voltar ao aplicativo.';
+ form.hidden=true;await supabase.auth.signOut();
+});
+</script>
+</body>
+</html>
