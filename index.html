@@ -1,13 +1,1 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PROGRAMAÇÃO ORTOBOM</title>
-<meta http-equiv="refresh" content="0;url=./login.html?v=2">
-</head>
-<body>
-<p>Abrindo o sistema ORTOBOM...</p>
-<a href="./login.html?v=2">Entrar no sistema</a>
-</body>
-</html>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PROGRAMAÇÃO ORTOBOM</title></head><body><p>Abrindo ORTOBOM...</p><script>const p=new URLSearchParams(location.hash.slice(1)),q=new URLSearchParams(location.search);const recovery=p.get('type')==='recovery'||q.get('type')==='recovery'||q.has('code')||p.has('access_token');location.replace('./'+(recovery?'recuperar-senha.html':'login.html')+location.search+location.hash);</script><a href="./login.html">Entrar no sistema</a></body></html>
