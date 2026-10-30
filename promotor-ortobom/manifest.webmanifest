@@ -2,7 +2,7 @@
   "name": "PROMOTOR ORTOBOM",
   "short_name": "PROMOTOR",
   "description": "Registro fotográfico e acompanhamento de visitas ORTOBOM",
-  "start_url": "./",
+  "start_url": "./entrada-v61.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
