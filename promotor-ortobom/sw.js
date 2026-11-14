@@ -1,4 +1,4 @@
-const VERSION='promotor-ortobom-v71';
+const VERSION='promotor-ortobom-v72';
 const SHELL=['./index.html','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(VERSION);await Promise.allSettled(SHELL.map(path=>cache.add(path)));await self.skipWaiting()})()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('promotor-ortobom-')&&key!==VERSION)await caches.delete(key);await self.clients.claim()})()));
